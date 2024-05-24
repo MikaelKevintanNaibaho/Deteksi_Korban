@@ -13,7 +13,7 @@ class ImagePublisher(Node):
             CompressedImage, "camera/image_raw/compressed", 10
         )
         self.bridge = CvBridge()
-        self.cap = cv2.VideoCapture(0)
+        self.cap = cv2.VideoCapture(1)
         if not self.cap.isOpened():
             self.get_logger().error("Failed to open camera.")
             return
