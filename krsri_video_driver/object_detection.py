@@ -3,6 +3,7 @@ import cv2
 import numpy as np
 import importlib.util
 import time
+import yaml
 from .coordinate_transformer import CoordinateTransformer
 
 
@@ -15,6 +16,7 @@ class ObjectDetection:
         threshold=0.5,
         resolution="1280x720",
         use_TPU=False,
+        calibration_file = os.path.join(os.path.dirname(__file__), "calibration_parameters.yml")
     ):
         self.MODEL_NAME = model_dir
         self.GRAPH_NAME = graph
@@ -23,9 +25,21 @@ class ObjectDetection:
         resW, resH = resolution.split("x")
         self.imW, self.imH = int(resW), int(resH)
         self.use_TPU = use_TPU
+        self.calibration_file = calibration_file
+        
+        with open(self.calibration_file, 'r') as f:
+            calibration_data = yaml.safe_load(f)
+        
+        camera_matrix = np.array(calibration_data['camera_matrix'])
+        distortion_coefficients = np.array(calibration_data['distortion_coefficients'])
 
+        # Initialize CoordinateTransformer with calibration parameters
         self.coordinate_transformer = CoordinateTransformer(
-            focal_lenght=500, known_width=8.10, imW=self.imW, imH=self.imH
+            camera_matrix=camera_matrix,
+            distortion_coefficients=distortion_coefficients,
+            known_width=8.50,  # Assuming known width in centimeters
+            imW=self.imW,
+            imH=self.imH
         )
 
         # Import TensorFlow libraries
@@ -186,9 +200,10 @@ class ObjectDetection:
                         closest_x,
                         closest_y,
                         closest_z,
-                    ) = self.coordinate_transformer.pixel_to_camera_coordinate(
-                        (xmin, ymin, xmax, ymax), distance, self.imW, self.imH
-                    )
+                    ) = closest_x, closest_y, closest_z = self.coordinate_transformer.pixel_to_camera_coordinate(
+    (xmin, ymin, xmax, ymax), distance
+)
+
                     cv2.putText(
                         frame,
                         "Distance: {:.2f} cm".format(distance),
