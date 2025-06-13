@@ -1,3 +1,4 @@
+import os
 from setuptools import find_packages, setup
 
 package_name = "krsri_video_driver"
@@ -9,6 +10,13 @@ setup(
     data_files=[
         ("share/ament_index/resource_index/packages", ["resource/" + package_name]),
         ("share/" + package_name, ["package.xml"]),
+        # Add model and label files, explicitly listing them to avoid directories
+        (os.path.join("share", package_name, "custom_model_lite"), [
+            "krsri_video_driver/custom_model_lite/detect.tflite",
+            "krsri_video_driver/custom_model_lite/labelmap.txt",
+        ]),
+        # Add the calibration file
+        (os.path.join("share", package_name), ["krsri_video_driver/calibration_parameters.yaml"]),
     ],
     install_requires=["setuptools"],
     zip_safe=True,

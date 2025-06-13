@@ -7,6 +7,8 @@ import cv2
 import numpy as np
 from .object_detection import ObjectDetection
 from geometry_msgs.msg import Point
+from ament_index_python.packages import get_package_share_directory
+import os
 
 
 class ImageSubscriber(Node):
@@ -21,12 +23,17 @@ class ImageSubscriber(Node):
         )
         self.subscription  # prevent unused variable warning
         self.bridge = CvBridge()
-        self.modeldir = (
-            "ros2_ws/src/krsri_video_driver/krsri_video_driver/custom_model_lite/"
-        )
+        package_share_directory = get_package_share_directory('krsri_video_driver')
+
+        # define path to model and calibration files
+        model_path = os.path.join(package_share_directory, 'custom_model_lite')
+        calibration_path = os.path.join(package_share_directory, 'calibration_parameters.yaml')
 
         self.object_detector = ObjectDetection(
-            model_dir=self.modeldir, threshold=0.5, resolution="640x480"
+            model_dir=model_path,
+            calibration_file=calibration_path,
+            threshold=0.5,
+            resolution="640x480"
         )
 
         self.victim_pub = self.create_publisher(Point, "coordinate_korban", 10);

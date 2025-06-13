@@ -11,13 +11,12 @@ class ObjectDetection:
     def __init__(
         self,
         model_dir,
+        calibration_file,
         graph="detect.tflite",
         labels="labelmap.txt",
         threshold=0.5,
         resolution="1280x720",
         use_TPU=False,
-        calibration_file = os.path.join(os.path.dirname(__file__), "calibration_parameters.yml")
-    ):
         self.MODEL_NAME = model_dir
         self.GRAPH_NAME = graph
         self.LABELMAP_NAME = labels
