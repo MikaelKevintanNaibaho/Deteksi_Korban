@@ -17,6 +17,7 @@ class ObjectDetection:
         threshold=0.5,
         resolution="1280x720",
         use_TPU=False,
+    ):
         self.MODEL_NAME = model_dir
         self.GRAPH_NAME = graph
         self.LABELMAP_NAME = labels
